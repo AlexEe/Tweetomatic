@@ -24,7 +24,6 @@ def main():
 
     # Call the Calendar API
     now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
-    print('Getting the upcoming event:')
     events_result = service.events().list(calendarId='primary', timeMin=now,
                                         maxResults=1, singleEvents=True,
                                         orderBy='startTime').execute()
@@ -35,14 +34,15 @@ def main():
     for event in events:
         start = event['start'].get('dateTime', event['start'].get('date'))
         end = event['end'].get('dateTime', event['end'].get('date'))
- #       return start
-    
-        print(f"The next chat will be on {start} until {end}.")
-        print(type(start))
-        pprint(events)
+        summary = event['summary']
+        start = datetime.datetime.strptime(f'{start}', '%Y-%m-%dT%H:%M:%SZ')
+        end = datetime.datetime.strptime(f'{end}', '%Y-%m-%dT%H:%M:%SZ')
+        print(datetime.datetime.strftime(start, f'The next {summary} will be on %d %B %Y from %I.%M -'), end = ' ')
+        print(datetime.datetime.strftime(end, '%I.%M %p. Send us a DM on the day to receive a link to the private chat on Telegram.'))
+        # pprint(events)
 
-        a = datetime.datetime.strptime('30/03/09 16:31:32.123', '%d/%m/%y %H:%M:%S.%f')
-        print(a)
+
+# time delta object: can be used to compare if one is bigger than the other
 
 if __name__ == '__main__':
     main()
