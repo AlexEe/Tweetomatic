@@ -14,7 +14,7 @@ Complex version:
     8. Feed bot with created tweet and time depending on current date 
     9. Put this information into a tweet
     10. Write a twitter bot that is fed with the created tweet
-    11. Determine curent date and compare with date of event
+    11. Determine curent date and compare with date of event:chronjob
     12. Time the tweet depending on current date
     13. Where do you host it: Heroku scheduler/ stackcp
     
