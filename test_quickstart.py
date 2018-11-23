@@ -1,0 +1,99 @@
+import datetime
+import unittest
+import mock
+from freezegun import freeze_time
+
+from quickstart import time_to_event, select_next_event, NoEventsFound, create_tweet
+
+
+# Mocks the current time to the below value
+@freeze_time("2018-11-23 10:00")
+class TestTimeToEvent(unittest.TestCase):
+    # Mocks select_next_event, so that when it's called as part of time_to_event,
+    # instead of executing its actual code, it doesn't do anything and returns
+    # what you want it to return
+    @mock.patch("quickstart.select_next_event")
+    def test_five_days_to_event(self, select_next_event):
+        # arrange
+        select_next_event.return_value = {'target_date': datetime.date(2018, 11, 28)}
+
+        # act
+        diff = time_to_event()
+
+        # assert
+        self.assertEqual(diff, -datetime.timedelta(days=5))
+
+    @mock.patch("quickstart.select_next_event")
+    def test_no_events(self, select_next_event):
+        # arrange
+        select_next_event.return_value = None
+
+        # act/assert
+        with self.assertRaises(NoEventsFound):
+            time_to_event()
+
+
+class TestSelectEvents(unittest.TestCase):
+    @mock.patch("quickstart.get_calendar_events", mock.MagicMock(return_value=[]))
+    def test_no_events(self):
+        # act
+        next_event = select_next_event()
+
+        # assert
+        self.assertEqual(next_event, None)
+
+    @mock.patch("quickstart.get_calendar_events")
+    def test_one_event_has_datetime(self, get_calendar_events):
+        # arrange
+        get_calendar_events.return_value = [
+            {'summary': 'blah', 'start': {'dateTime': '2018-11-23T21:00:00Z'},
+             'end': {'dateTime': '2018-11-23T23:00:00Z'}}]
+
+        # act
+        next_event = select_next_event()
+
+        # assert
+        self.assertEqual(next_event['summary'], 'blah')
+        self.assertEqual(next_event['start'], datetime.datetime(2018, 11, 23, 21, 0, 0))
+        self.assertEqual(next_event['end'], datetime.datetime(2018, 11, 23, 23, 0, 0))
+        self.assertEqual(next_event['target_date'], datetime.date(2018, 11, 23))
+
+
+class TestCreateTweet(unittest.TestCase):
+    @mock.patch("quickstart.time_to_event")
+    def test_propagates_no_events_found_exception(self, time_to_event):
+        # arrange
+        time_to_event.side_effect = NoEventsFound
+
+        # act/assert
+        with self.assertRaises(NoEventsFound):
+            create_tweet()
+
+    @mock.patch("quickstart.time_to_event")
+    @mock.patch("quickstart.select_next_event")
+    def test_has_correct_content(self, select_next_event, time_to_event):
+        # arrange
+        time_to_event.return_value = datetime.timedelta(days=3)
+        select_next_event.return_value = {
+            'target_date': datetime.date(2018, 11, 28),
+            'start': datetime.datetime(2018, 11, 28, 10, 30),
+            'end': datetime.datetime(2018, 11, 28, 12, 0),
+            'summary': 'FakeSummary'
+            }
+
+        # act
+        tweet = create_tweet()
+
+        # assert
+        self.assertEqual(tweet,
+                         "The next FakeSummary will take place on "
+                         "Wednesday, 28 November 2018, from 10.30 AM "
+                         "to 12.00 PM. "
+                         "Send us a DM on the day to receive a link to the private chat on "
+                         "Telegram.")
+
+
+if __name__ == '__main__':
+    unittest.main()
+
+

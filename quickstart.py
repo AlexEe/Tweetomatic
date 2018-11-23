@@ -1,5 +1,5 @@
 from __future__ import print_function
-import datetime
+from datetime import datetime
 from googleapiclient.discovery import build
 from httplib2 import Http
 from oauth2client import file, client, tools
@@ -22,12 +22,13 @@ def get_calendar_events():
         flow = client.flow_from_clientsecrets('credentials.json', SCOPES)
         creds = tools.run_flow(flow, store)
     service = build('calendar', 'v3', http=creds.authorize(Http()))
-    now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
+    now = datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
     events_result = service.events().list(calendarId='primary', timeMin=now,
                                         maxResults=1, singleEvents=True,
                                         orderBy='startTime').execute()
     events = events_result.get('items', [])
     return events
+
 
 
 def select_next_event():
@@ -40,35 +41,22 @@ def select_next_event():
     if not events:
         # stop the function without error message
         print('No upcoming events found.')
-    for event in events:
-        summary = event['summary']
-        start = event['start'].get('dateTime', event['start'].get('date'))
-        end = event['end'].get('dateTime', event['end'].get('date'))
-        start_readable = datetime.datetime.strptime(f'{start}', '%Y-%m-%dT%H:%M:%SZ')
-        end_readable = datetime.datetime.strptime(f'{end}', '%Y-%m-%dT%H:%M:%SZ')
+        return
 
-        # do these calculations in time_to_event function
-        now = datetime.datetime.now()
-        now = datetime.datetime.strftime(now, '%Y, %m, %d')
-
-        # turn into strp immediately?
-        target_date = datetime.datetime.strftime(start_readable, '%Y, %m, %d')
-        
-        start_date = datetime.datetime.strftime(start_readable, '%A, %d %B %Y')
-        start_hour = datetime.datetime.strftime(start_readable, '%I.%M %p')
-        end_date = datetime.datetime.strftime(end_readable, '%d %B %Y')
-        end_hour = datetime.datetime.strftime(end_readable, '%I.%M %p')
-        
-        data_event = {'now': f'{now}',
-                      'target_date': f'{target_date}',
-                      'summary': f'{summary}',
-                      'start_date': f'{start_date}',
-                      'start_hour': f'{start_hour}',
-                      'end_date': f'{end_date}',
-                      'end_hour': f'{end_hour}'}
-        
-        pprint(data_event)
-        return data_event
+    event = events[0]
+    summary = event['summary']
+    start = event['start'].get('dateTime', event['start'].get('date'))
+    end = event['end'].get('dateTime', event['end'].get('date'))
+    start_datetime = datetime.strptime(f'{start}', '%Y-%m-%dT%H:%M:%SZ')
+    end_datetime = datetime.strptime(f'{end}', '%Y-%m-%dT%H:%M:%SZ')
+    
+    data_event = {'target_date': start_datetime.date(),
+                  'summary': f'{summary}',
+                  'start': start_datetime,
+                  'end': end_datetime}
+    
+    pprint(data_event)
+    return data_event
 
 
 def time_to_event():
@@ -76,15 +64,20 @@ def time_to_event():
     Calculates and returns time from now to next event.
     '''
     data_event = select_next_event()
+    if not data_event:
+        raise NoEventsFound()
     print(data_event)
-    now = data_event['now']
-    now = datetime.datetime.strptime(now, '%Y, %m, %d')
+    now = datetime.now().date()
     target_date = data_event['target_date']
-    target_date = datetime.datetime.strptime(target_date, '%Y, %m, %d')
     diff = now - target_date
     return(diff)
     print(diff)
-    
+
+def format_date(dt):
+    return datetime.strftime(dt, '%A, %d %B %Y')
+
+def format_hour(dt):
+    return datetime.strftime(dt, '%I.%M %p')
 
 def create_tweet():
     '''
@@ -98,17 +91,17 @@ def create_tweet():
         # if now - start_date <= 7:
             # create tweet
             # return tweet
-        # now = datetime.datetime.utcnow().isoformat() + 'Z'
+        # now = datetime.utcnow().isoformat() + 'Z'
 
     tweet = f"The next {data_event['summary']} will take place" \
-            + f" on {data_event['start_date']}, from {data_event['start_hour']}" \
-            + f" to {data_event['end_hour']}." \
+            + f" on {format_date(data_event['start'])}, from {format_hour(data_event['start'])}" \
+            + f" to {format_hour(data_event['end'])}." \
             + f" Send us a DM on the day to receive a link to the private chat on Telegram."
     print(tweet)
     return tweet
 
 
-def send_tweet():
+def send_tweet(tweet):
     auth = tweepy.OAuthHandler("your_consumer_key", "your_consumer_key_secret")
     auth.set_access_token("your_access_token", "your_access_token_secret")
     api = tweepy.API(auth)
@@ -119,8 +112,16 @@ def main():
     get_calendar_events()
     select_next_event()
     time_to_event()
-    create_tweet()
-    send_tweet()
+    try:
+        tweet = create_tweet()
+        send_tweet(tweet)
+    except NoEventsFound:
+        print("No events found")
+
+# class EventNotInRange(Exception)
+
+class NoEventsFound(Exception):
+    pass
 
 
 if __name__ == '__main__':
