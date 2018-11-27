@@ -121,9 +121,9 @@ def create_tweet(data_event, diff):
                 + f" survivor and take place from {start_hour}" \
                 + f" to {end_hour}, UK time."
 
-##                f"Quick reminder! Our chat for #bisexual survivors will be" \
-##                + f"going live tomorrow, {start_hour} UK time." \
-##                + " Download Telegram in advance so you’re ready!"
+#                f"Quick reminder! Our chat for #bisexual survivors will be" \
+#                + f"going live tomorrow, {start_hour} UK time." \
+#                + " Download Telegram in advance so you’re ready!"
 
         return tweet
 
