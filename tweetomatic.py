@@ -65,7 +65,6 @@ def time_to_event(data_event):
     now = datetime.now().date()
     target_date = data_event["target_date"]
     diff = now - target_date
-    print(diff)
     return(diff)
 
 
@@ -119,9 +118,14 @@ def create_tweet(data_event, diff):
                 + " Send us a DM on the day to receive a link to the chat on Telegram."
 
     elif diff == timedelta(days=-1):
-        tweet = f"Quick reminder! Our chat for #bisexual survivors will be" \
-                + f"going live tomorrow, {start_hour} UK time." \
-                + " Download Telegram in advance so you’re ready!"
+        tweet = "As always, you can receive the secret link to our chat tomorrow" \
+                + " by sending us a DM! The chat will be moderated by a non-monosexual"\
+                + f" survivor and take place from {start_hour}" \
+                + f" to {end_hour}, UK time."
+
+##                f"Quick reminder! Our chat for #bisexual survivors will be" \
+##                + f"going live tomorrow, {start_hour} UK time." \
+##                + " Download Telegram in advance so you’re ready!"
 
         return tweet
 
@@ -161,7 +165,7 @@ def send_tweet(tweet):
 
     else:
         print(tweet)
-        #api.update_status(tweet) # Commented out until chron-job is created
+        # api.update_status(tweet) # Uncomment to send tweet
 
 
 def get_last_10_tweets():
@@ -188,6 +192,7 @@ def get_last_10_tweets():
 
 
 def main():
+    # Put a try here because of NoEventsFound error??
     next_event = get_next_event()
     data_event = select_event_data(next_event)
     diff = time_to_event(data_event)
