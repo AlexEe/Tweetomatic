@@ -1,9 +1,7 @@
-from __future__ import print_function
 from datetime import datetime, timedelta
 from googleapiclient.discovery import build
 from httplib2 import Http
 from oauth2client import file, client, tools
-from pprint import pprint
 import json
 import tweepy
 
@@ -165,7 +163,7 @@ def send_tweet(tweet):
 
     else:
         print(tweet)
-        # api.update_status(tweet) # Uncomment to send tweet
+        api.update_status(tweet) # Uncomment to send tweet
 
 
 def get_last_10_tweets():
