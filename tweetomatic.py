@@ -1,3 +1,17 @@
+import os
+
+token_json = os.environ.get('TOKEN_JSON')
+if not token_json:
+    raise ValueError("You must have 'TOKEN_JSON' variable.")
+credentials_json = os.environ.get('CREDENTIALS_JSON')
+twitter_access_token = os.environ.get('TWITTER_ACCESS_TOKEN')
+twitter_api_key = os.environ.get('TWITTER_API_KEY')
+
+print(token_json)
+print(credentials_json)
+print(twitter_access_token)
+print(twitter_api_key)
+
 from datetime import datetime, timedelta
 from googleapiclient.discovery import build
 from httplib2 import Http
@@ -15,10 +29,10 @@ def get_next_event():
     which stores the user"s access to access the google account.
     Puts next upcoming event in a list.
     """
-    store = file.Storage("token.json")
+    store = file.Storage(token_json)
     creds = store.get()
     if not creds or creds.invalid:
-        flow = client.flow_from_clientsecrets("credentials.json", SCOPES)
+        flow = client.flow_from_clientsecrets(credentials_json, SCOPES)
         creds = tools.run_flow(flow, store)
     service = build("calendar", "v3", http=creds.authorize(Http()))
     now = datetime.utcnow().isoformat() + "Z" # "Z" indicates UTC time
@@ -128,9 +142,10 @@ def create_tweet(data_event, diff):
         return tweet
 
     elif diff == timedelta(days=0):
-        tweet = "Our next private chat for bi survivors is happening tonight," \
-                + f" from {start_hour} to {end_hour}." \
-                + " Send us a DM to receive a link to the chat on Telegram."
+        tweet = f"Our chat tonight ({start_hour} - {end_hour}) will be on" \
+                + " the topic of survivor's guilt." \
+                + " To join, just send us a DM and" \
+                + " you'll receive a link to the chat on Telegram."
 
         return tweet
 
@@ -163,7 +178,7 @@ def send_tweet(tweet):
 
     else:
         print(tweet)
-        api.update_status(tweet) # Uncomment to send tweet
+        #api.update_status(tweet) # Uncomment to send tweet
 
 
 def get_last_10_tweets():
