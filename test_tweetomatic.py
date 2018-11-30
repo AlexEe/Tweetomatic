@@ -2,12 +2,8 @@ import datetime
 import unittest
 import mock
 from freezegun import freeze_time
-from tweetomatic import time_to_event, select_event_data, NoEventsFound, create_tweet
+from tweetomatic_home import time_to_event, select_event_data, NoDataFound, NoEventsFound, create_tweet
 
-
-
-# Mocks the current time to the below value
-@freeze_time("2018-11-26 10:00")
 
 class TestSelectEventData(unittest.TestCase):
     
@@ -35,6 +31,28 @@ class TestSelectEventData(unittest.TestCase):
         self.assertEqual(data_event['start'], datetime.datetime(2018, 11, 23, 21, 0, 0))
         self.assertEqual(data_event['end'], datetime.datetime(2018, 11, 23, 23, 0, 0))
         self.assertEqual(data_event['target_date'], datetime.date(2018, 11, 23))
+
+@freeze_time("2018-11-23 10:00")
+class TestTimeToEvent(unittest.TestCase):
+
+    def test_no_events_found_raises_NoDataFound(self):
+        # act
+        data_event = {}
+
+        # assert
+        with self.assertRaises(NoDataFound):
+            time_to_event(data_event)
+
+    def test_returns_correct_diff(self):
+        # arrange
+        target_date = datetime.date(2018, 11, 28)
+        now = datetime.datetime.now().date()
+
+        # act
+        diff = now - target_date
+
+        # assert
+        self.assertEqual(diff, -datetime.timedelta(days=5))
 
 
 """

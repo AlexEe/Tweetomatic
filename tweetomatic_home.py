@@ -59,7 +59,7 @@ def time_to_event(data_event):
     Calculates and returns time from now to next event.
     """
     if not data_event:
-        raise NoEventsFound()
+        raise NoDataFound(Exception)
     now = datetime.now().date()
     target_date = data_event["target_date"]
     diff = now - target_date
@@ -200,6 +200,8 @@ def main():
         send_tweet(tweet)
     except NoEventsFound:
         print("No events found.")
+    except NoDataFound:
+        print("No data passed into data_event dictionary.")
     except EventNotInRange:
         print("Event is not in range.")
     except TweetTooLong:
@@ -209,10 +211,11 @@ def main():
 class EventNotInRange(Exception):
     pass
 
-
 class NoEventsFound(Exception):
     pass
 
+class NoDataFound(Exception):
+    pass
 
 class TweetTooLong(Exception):
     pass
