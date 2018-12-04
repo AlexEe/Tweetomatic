@@ -50,6 +50,7 @@ def select_event_data(next_event):
                   "start": start_datetime,
                   "end": end_datetime
                   }
+    print(data_event["start"])
     return data_event
 
 
@@ -76,6 +77,9 @@ def format_date(dt):
 
 
 def format_date_short(dt):
+    """
+    Function to formate datetime object as string: day, month.
+    """
     return datetime.strftime(dt, "%d %B")
 
 

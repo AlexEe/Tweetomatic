@@ -1,8 +1,9 @@
 import datetime
+from datetime import timedelta
 import unittest
 import mock
 from freezegun import freeze_time
-from tweetomatic_home import time_to_event, select_event_data, NoDataFound, NoEventsFound, create_tweet
+from tweetomatic_home import time_to_event, select_event_data, format_date, format_date_short, format_hour, NoDataFound, NoEventsFound, EventNotInRange, create_tweet
 
 
 class TestSelectEventData(unittest.TestCase):
@@ -19,7 +20,7 @@ class TestSelectEventData(unittest.TestCase):
     def test_returns_event_data(self):
         # arrange
         next_event = [
-            {'summary': 'test_summary', 'start': {'dateTime': '2018-11-23T21:00:00Z'},
+            {'summary': 'test summary', 'start': {'dateTime': '2018-11-23T21:00:00Z'},
              'end': {'dateTime': '2018-11-23T23:00:00Z'}}
             ]
     
@@ -27,10 +28,11 @@ class TestSelectEventData(unittest.TestCase):
         data_event = select_event_data(next_event)
         
         # assert
-        self.assertEqual(data_event['summary'], 'test_summary')
+        self.assertEqual(data_event['summary'], 'test summary')
         self.assertEqual(data_event['start'], datetime.datetime(2018, 11, 23, 21, 0, 0))
         self.assertEqual(data_event['end'], datetime.datetime(2018, 11, 23, 23, 0, 0))
         self.assertEqual(data_event['target_date'], datetime.date(2018, 11, 23))
+
 
 @freeze_time("2018-11-23 10:00")
 class TestTimeToEvent(unittest.TestCase):
@@ -55,8 +57,84 @@ class TestTimeToEvent(unittest.TestCase):
         self.assertEqual(diff, -datetime.timedelta(days=5))
 
 
-"""
+class TestFormatDate(unittest.TestCase):
 
+    def test_returns_formated_date(self):
+        # arrange
+        example_date = datetime.datetime(2018, 11, 23, 21, 0, 0)
+
+        # act
+        formated_date = format_date(example_date)
+
+        # assert
+        self.assertEqual(formated_date, "Friday, 23 November 2018")
+
+
+class TestFormatDateShort(unittest.TestCase):
+
+    def test_returns_date_month(self):
+        # arrange
+        example_date = datetime.datetime(2018, 11, 23, 21, 0, 0)
+
+        # act
+        formated_date = format_date_short(example_date)
+
+        # assert
+        self.assertEqual(formated_date, "23 November")
+
+
+class TestFormatHour(unittest.TestCase):
+    
+    def test_returns_start_hour(self):
+        # arrange
+        example_date = datetime.datetime(2018, 11, 23, 21, 0, 0)
+
+        # act
+        formated_date = format_hour(example_date)
+
+        # assert
+        self.assertEqual(formated_date, "09.00 PM")        
+
+
+class TestCreateTweet(unittest.TestCase):
+    
+    def test_raises_EventNotInRange_exception(self):
+        # arrange
+        data_event = {"summary": "test summary",
+                      "start": datetime.datetime(2018, 11, 23, 21, 0, 0),
+                      "end": datetime.datetime(2018, 11, 23, 23, 0, 0),
+                      "target_date": datetime.date(2018, 11, 23)
+                      }
+        diff = timedelta(days=-9)
+
+        # act/ assert
+        with self.assertRaises(EventNotInRange):
+            create_tweet(data_event, diff)
+            
+
+
+    def test_returns_formated_tweet(self):
+        # arrange
+        data_event = {"summary": "test summary",
+                      "start": datetime.datetime(2018, 11, 23, 21, 0, 0),
+                      "end": datetime.datetime(2018, 11, 23, 23, 0, 0),
+                      "target_date": datetime.date(2018, 11, 23)
+                      }
+
+        diff = timedelta(days=-7)
+        
+        # act
+        tweet = create_tweet(data_event, diff)
+
+        # assert
+        self.assertEqual(tweet, "Our next test summary will take place" \
+                + " on Friday, 23 November 2018," \
+                + " from 09.00 PM to 11.00 PM." \
+                + " Send us a DM on the day to receive a link to the private chat on Telegram.")
+
+
+
+"""
 
 class TestSelectEvents(unittest.TestCase):
     @mock.patch("quickstart.get_calendar_events", mock.MagicMock(return_value=[]))
