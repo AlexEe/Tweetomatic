@@ -63,7 +63,9 @@ def time_to_event(data_event):
     now = datetime.now().date()
     target_date = data_event["target_date"]
     diff = now - target_date
+    print(diff)
     return(diff)
+
 
 
 def format_date(dt):
@@ -94,7 +96,15 @@ def create_tweet(data_event, diff):
     end_hour = format_hour(data_event["end"])
     date_month = format_date_short(data_event["start"])
 
-    if diff == timedelta(days=-7):
+    if diff == timedelta(days=-8):
+        tweet = "Mark it in your calendars :)" \
+                + " Our next private chat for non-monosexual survivors will take place" \
+                + f" on {date_month_year}, from {start_hour}" \
+                + f" to {end_hour}, UK time." \
+
+        return tweet
+
+    elif diff == timedelta(days=-7):
         tweet = f"Our next {summary} will take place" \
                 + f" on {date_month_year}, from {start_hour}" \
                 + f" to {end_hour}." \
