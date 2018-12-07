@@ -85,7 +85,7 @@ def time_to_event(data_event):
     now = datetime.now().date()
     target_date = data_event["target_date"]
     diff = now - target_date
-    print(diff)
+    # print(diff)
     return(diff)
 
 
@@ -133,18 +133,23 @@ def create_tweet(data_event, diff):
 
         return tweet
 
-    elif diff == timedelta(days=-4):
-        tweet = f"We'll be hosting our next chat on {date_month}, {start_hour}." \
-                + " It’s private, online and moderated by a non-monosexual survivor :)" \
-                + " Send us a DM on the day to receive the secret link to join the chat on Telegram!"
+    elif diff == timedelta(days=-5):
+        tweet = "The time before the holidays can be stressful!" \
+                + " Make sure you leave enough room for self-care in all the pre-Christmas madness :)"
+        
+        return tweet
+
+    # elif diff == timedelta(days=-5):
+    #     tweet = f"We'll be hosting our next chat on {date_month}, {start_hour}." \
+    #             + " It’s private, online and moderated by a non-monosexual survivor :)" \
+    #             + " Send us a DM on the day to receive the secret link to join the chat on Telegram!"
         
         return tweet
 
     elif diff == timedelta(days=-3):
-        tweet = f"We hold private chats for #bisexual survivors every two weeks." \
-                + f" The next one will be this {date_month_year}, from {start_hour}" \
-                + f" to {end_hour}." \
-                + " Send us a DM on the day to receive a link to the chat on Telegram."
+        tweet = "Quick reminder! Our chat for #bisexual survivors will be" \
+                + f" going live this {date_month_year}, {start_hour}-{end_hour}, UK time." \
+                + " Download Telegram in advance so you’re ready!"
 
         return tweet
 
@@ -153,10 +158,6 @@ def create_tweet(data_event, diff):
                 + " by sending us a DM! The chat will be moderated by a non-monosexual"\
                 + f" survivor and take place from {start_hour}" \
                 + f" to {end_hour}, UK time."
-
-#                f"Quick reminder! Our chat for #bisexual survivors will be" \
-#                + f"going live tomorrow, {start_hour} UK time." \
-#                + " Download Telegram in advance so you’re ready!"
 
         return tweet
 
@@ -196,7 +197,7 @@ def send_tweet(tweet):
         raise TweetTooLong(Exception)
 
     else:
-        print(tweet)
+        # print(tweet)
         api.update_status(tweet) # Uncomment to send tweet
 
 
