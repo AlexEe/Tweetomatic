@@ -3,7 +3,7 @@ from datetime import timedelta
 import unittest
 import mock
 from freezegun import freeze_time
-from tweetomatic_home import time_to_event, select_event_data, format_date, format_date_short, format_hour, NoDataFound, NoEventsFound, EventNotInRange, create_tweet
+from tweetomatic_heroku import time_to_event, select_event_data, format_date, format_date_short, format_hour, NoDataFound, NoEventsFound, EventNotInRange, create_tweet
 
 
 class TestSelectEventData(unittest.TestCase):
