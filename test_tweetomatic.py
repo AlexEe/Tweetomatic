@@ -2,6 +2,8 @@ import datetime
 from datetime import timedelta
 import unittest
 import mock
+import json
+import tweepy
 from freezegun import freeze_time
 from tweetomatic_heroku import time_to_event, select_event_data, format_date, format_date_short, format_hour, NoDataFound, NoEventsFound, EventNotInRange, create_tweet
 
@@ -131,6 +133,35 @@ class TestCreateTweet(unittest.TestCase):
                 + " on Friday, 23 November 2018," \
                 + " from 09.00 PM to 11.00 PM." \
                 + " Send us a DM on the day to receive a link to the private chat on Telegram.")
+
+
+class TestTwitterAccess(unittest.TestCase):
+
+    def test_twitter_returns_last_twenty_tweets(self):
+
+        # arrange
+        with open ("twitter_access_token.json", "r") as f:
+            tokens = json.load(f)
+            access_token = tokens["access_token"]
+            access_token_secret = tokens["access_token_secret"]
+        with open ("twitter_api_key.json", "r") as f:
+            keys = json.load(f)
+            api_key = keys["api_key"]
+            api_secret_key = keys["api_secret_key"]
+            
+        auth = tweepy.OAuthHandler(f"{api_key}", f"{api_secret_key}")
+        auth.set_access_token(f"{access_token}", f"{access_token_secret}") 
+        api = tweepy.API(auth)
+
+        # act
+        public_tweets = api.home_timeline()
+        tweet = 0
+        for i in public_tweets:
+            tweet += 1
+
+        # assert
+        self.assertEqual(tweet, 20)
+
 
 
 

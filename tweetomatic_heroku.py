@@ -134,15 +134,9 @@ def create_tweet(data_event, diff):
         return tweet
 
     elif diff == timedelta(days=-5):
-        tweet = "The time before the holidays can be stressful!" \
-                + " Make sure you leave enough room for self-care in all the pre-Christmas madness :)"
-        
-        return tweet
-
-    # elif diff == timedelta(days=-5):
-    #     tweet = f"We'll be hosting our next chat on {date_month}, {start_hour}." \
-    #             + " It’s private, online and moderated by a non-monosexual survivor :)" \
-    #             + " Send us a DM on the day to receive the secret link to join the chat on Telegram!"
+        tweet = f"We'll be hosting our next chat on {date_month}, {start_hour}." \
+                + " It’s private, online and moderated by a non-monosexual survivor :)" \
+                + " Send us a DM on the day to receive the secret link to join the chat on Telegram!"
         
         return tweet
 
@@ -197,39 +191,14 @@ def send_tweet(tweet):
         raise TweetTooLong(Exception)
 
     else:
-        # print(tweet)
-        api.update_status(tweet) # Uncomment to send tweet
-
-
-def get_last_10_tweets():
-    """
-    Checks access to twitter by
-    retrieving last 10 tweets from timeline.
-    """
-    with open ("twitter_access_token.json", "r") as f:
-        tokens = json.load(f)
-        access_token = tokens["access_token"]
-        access_token_secret = tokens["access_token_secret"]
-    with open ("twitter_api_key.json", "r") as f:
-        keys = json.load(f)
-        api_key = keys["api_key"]
-        api_secret_key = keys["api_secret_key"]
-        
-    auth = tweepy.OAuthHandler(f"{api_key}", f"{api_secret_key}")
-    auth.set_access_token(f"{access_token}", f"{access_token_secret}") 
-    api = tweepy.API(auth)
-    
-    public_tweets = api.home_timeline()
-    for tweet in public_tweets:
-        print(tweet.text)
+        print(tweet)
+        # api.update_status(tweet) # Uncomment to send tweet
 
 
 def main():
-    # Put a try here because of NoEventsFound error??
     next_event = get_next_event()
     data_event = select_event_data(next_event)
     diff = time_to_event(data_event)
-    # get_last_10_tweets()  # Uncomment to check twitter access
     try:
         tweet = create_tweet(data_event, diff)
         send_tweet(tweet)
