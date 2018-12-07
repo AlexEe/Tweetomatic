@@ -1,20 +1,28 @@
 from os import environ
 import json
 
-# Write TOKEN_JSON locally as env variables with: "export TOKEN_JSON="..."
-
+"""
+Gets access environmental variables and puts them in variables.
+"""
 credentials_json = environ.get("CREDENTIALS_JSON")
 token_json = environ.get("TOKEN_JSON")
 twitter_access_token = environ.get("TWITTER_ACCESS_TOKEN")
 twitter_api_key = environ.get("TWITTER_API_KEY")
 
 
-def write_json_to_file(json_content, filename):
+def write_json_to_file(json_content, filename):    
+    """
+    Takes environmental variables and turns them into .json files.
+    Needs to be called before importing googleapiclient.
+    """
     with open(filename, "w") as f:
         f.write(json_content)
         return json_content
 
-
+"""
+Creates .json files with contents of env variables,
+to be used by google api client and twitter api client.
+"""
 credentials = write_json_to_file(credentials_json, "credentials.json")
 token = write_json_to_file(token_json, "token.json")
 twitter_token = write_json_to_file(twitter_access_token, "twitter_access_token.json")
@@ -26,6 +34,7 @@ from googleapiclient.discovery import build
 from httplib2 import Http
 from oauth2client import file, client, tools
 import tweepy
+
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = "https://www.googleapis.com/auth/calendar.readonly"
@@ -191,8 +200,8 @@ def send_tweet(tweet):
         raise TweetTooLong(Exception)
 
     else:
-        print(tweet)
-        # api.update_status(tweet) # Uncomment to send tweet
+        # print(tweet)
+        api.update_status(tweet) # Uncomment to send tweet
 
 
 def main():
@@ -214,7 +223,6 @@ def main():
 
 class EventNotInRange(Exception):
     pass
-
 
 class NoEventsFound(Exception):
     pass
