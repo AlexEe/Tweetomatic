@@ -18,7 +18,7 @@ def write_json_to_file(json_content, filename):
     with open(filename, "w") as f:
         f.write(json_content)
         return json_content
-
+        
 """
 Creates .json files with contents of env variables,
 to be used by google api client and twitter api client.
@@ -109,6 +109,10 @@ def format_date_short(dt):
     return datetime.strftime(dt, "%d %B")
 
 
+def format_weekday(dt):
+    return datetime.strftime(dt, "%A")
+
+
 def format_hour(dt):
     """
     Function to format datetime object as string: hour, minute, AM/PM.
@@ -122,15 +126,16 @@ def create_tweet(data_event, diff):
     """
     summary = data_event["summary"]
     date_month_year = format_date(data_event["start"])
+    weekday = format_weekday(data_event["start"])
     start_hour = format_hour(data_event["start"])
     end_hour = format_hour(data_event["end"])
     date_month = format_date_short(data_event["start"])
 
-    if diff == timedelta(days=-8):
+    if diff == timedelta(days=-9):
         tweet = "Mark it in your calendars :)" \
                 + " Our next private chat for non-monosexual survivors will take place" \
                 + f" on {date_month_year}, from {start_hour}" \
-                + f" to {end_hour}, UK time." \
+                + f" to {end_hour}, UK time." 
 
         return tweet
 
@@ -156,6 +161,14 @@ def create_tweet(data_event, diff):
 
         return tweet
 
+    elif diff == timedelta(days=-2):
+        tweet = "Need a break from the #biphobia circulating on twitter last week?" \
+                + " Let us know how you're doing at our bi-weekly chat on Telegram," \
+                + f" this {weekday}, {start_hour}." \
+                + " As always, the chat is moderated by a non-monosexual survivor."           
+
+        return tweet
+
     elif diff == timedelta(days=-1):
         tweet = "As always, you can receive the secret link to our chat tomorrow" \
                 + " by sending us a DM! The chat will be moderated by a non-monosexual"\
@@ -164,11 +177,12 @@ def create_tweet(data_event, diff):
 
         return tweet
 
-    elif diff == timedelta(days=0):
-        tweet = f"Our chat tonight ({start_hour} - {end_hour}) will be on" \
-                + " the topic of survivor's guilt." \
-                + " To join, just send us a DM and" \
-                + " you'll receive a link to the chat on Telegram."
+    elif diff == timedelta(days=-0):
+        tweet = "Having a rough week and just need someone to talk to?" \
+                + " Join our save & friendly chat for bi survivors tonight" \
+                + f" from {start_hour} to {end_hour}." \
+                + " Send us a DM now to" \
+                + " receive the secret link to the chat on Telegram."
 
         return tweet
 
@@ -231,6 +245,9 @@ class NoDataFound(Exception):
     pass
 
 class TweetTooLong(Exception):
+    pass
+
+class NoEnvVariables(Exception):
     pass
 
 

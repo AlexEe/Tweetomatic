@@ -5,7 +5,7 @@ import mock
 import json
 import tweepy
 from freezegun import freeze_time
-from tweetomatic_heroku import time_to_event, select_event_data, format_date, format_date_short, format_hour, NoDataFound, NoEventsFound, EventNotInRange, create_tweet
+from tweetomatic_heroku import time_to_event, select_event_data, format_date, format_weekday, format_date_short, format_hour, NoDataFound, NoEventsFound, EventNotInRange, create_tweet
 
 
 class TestSelectEventData(unittest.TestCase):
@@ -72,6 +72,18 @@ class TestFormatDate(unittest.TestCase):
         self.assertEqual(formated_date, "Friday, 23 November 2018")
 
 
+class TestFormatWeekDay(unittest.TestCase):
+
+    def test_returns_weekday(self):
+        # arrange
+        example_date = datetime.datetime(2018, 11, 23, 21, 0, 0)
+
+        # act
+        weekday = format_weekday(example_date)
+
+        # assert
+        self.assertEqual(weekday, "Friday")
+
 class TestFormatDateShort(unittest.TestCase):
 
     def test_returns_date_month(self):
@@ -107,7 +119,7 @@ class TestCreateTweet(unittest.TestCase):
                       "end": datetime.datetime(2018, 11, 23, 23, 0, 0),
                       "target_date": datetime.date(2018, 11, 23)
                       }
-        diff = timedelta(days=-9)
+        diff = timedelta(days=-10)
 
         # act/ assert
         with self.assertRaises(EventNotInRange):
