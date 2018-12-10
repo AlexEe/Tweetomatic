@@ -3,21 +3,30 @@ import json
 
 """
 Gets access environmental variables and puts them in variables.
+Need to be imported before googleapiclient and twitter api client.
 """
 credentials_json = environ.get("CREDENTIALS_JSON")
 token_json = environ.get("TOKEN_JSON")
 twitter_access_token = environ.get("TWITTER_ACCESS_TOKEN")
 twitter_api_key = environ.get("TWITTER_API_KEY")
+env_var = True
 
 
 def write_json_to_file(json_content, filename):    
     """
     Takes environmental variables and turns them into .json files.
     Needs to be called before importing googleapiclient.
+    Changes env_var to False if env variables have not been set.
     """
-    with open(filename, "w") as f:
-        f.write(json_content)
-        return json_content
+    global env_var
+    try:
+        with open(filename, "w") as f:
+            f.write(json_content)
+            return json_content
+    except TypeError:
+        env_var = False
+        return env_var
+        
         
 """
 Creates .json files with contents of env variables,
@@ -34,23 +43,29 @@ from googleapiclient.discovery import build
 from httplib2 import Http
 from oauth2client import file, client, tools
 import tweepy
+import sys
 
 
-# If modifying these scopes, delete the file token.json.
-SCOPES = "https://www.googleapis.com/auth/calendar.readonly"
 
-
-def get_next_event():
+def get_next_event(env_var):
     """
-    Calls the Calendar API with token.json,
-    which stores the user"s access to access the google account.
-    Puts next upcoming event in a list.
+    If env variables available:
+    Calls the Google Calendar API with token.json, and credentials.json,
+    which store the user's secret access tokens and keys.
+    Selects next upcoming event from calendar.
     """
+    if env_var == False:
+        raise NoEnvVariables(Exception)
+
+    SCOPES = "https://www.googleapis.com/auth/calendar.readonly"
+
     store = file.Storage("token.json")
     creds = store.get()
+    
     if not creds or creds.invalid:
         flow = client.flow_from_clientsecrets("credentials.json", SCOPES)
         creds = tools.run_flow(flow, store)
+        
     service = build("calendar", "v3", http=creds.authorize(Http()))
     now = datetime.utcnow().isoformat() + "Z" # "Z" indicates UTC time
     events_result = service.events().list(calendarId="primary", timeMin=now,
@@ -91,6 +106,7 @@ def time_to_event(data_event):
     """
     if not data_event:
         raise NoDataFound(Exception)
+    
     now = datetime.now().date()
     target_date = data_event["target_date"]
     diff = now - target_date
@@ -219,7 +235,10 @@ def send_tweet(tweet):
 
 
 def main():
-    next_event = get_next_event()
+    try:
+        next_event = get_next_event(env_var)
+    except NoEnvVariables:
+        sys.exit("No environmental variables.")
     data_event = select_event_data(next_event)
     diff = time_to_event(data_event)
     try:

@@ -5,7 +5,18 @@ import mock
 import json
 import tweepy
 from freezegun import freeze_time
-from tweetomatic_heroku import time_to_event, select_event_data, format_date, format_weekday, format_date_short, format_hour, NoDataFound, NoEventsFound, EventNotInRange, create_tweet
+from tweetomatic_heroku import get_next_event, time_to_event, select_event_data, format_date, format_weekday, format_date_short, format_hour, NoEnvVariables, NoDataFound, NoEventsFound, EventNotInRange, create_tweet
+
+
+class TestGetNextEvent(unittest.TestCase):
+
+    def test_raises_NoEnvVariables(self):
+        # act
+        env_var = False
+
+        # assert
+        with self.assertRaises(NoEnvVariables):
+            get_next_event(env_var)
 
 
 class TestSelectEventData(unittest.TestCase):
@@ -149,7 +160,7 @@ class TestCreateTweet(unittest.TestCase):
 
 class TestTwitterAccess(unittest.TestCase):
 
-    def test_twitter_returns_last_twenty_tweets(self):
+    def test_returns_tweets_from_timeline(self):
 
         # arrange
         with open("twitter_access_token.json", "r") as f:
@@ -172,7 +183,7 @@ class TestTwitterAccess(unittest.TestCase):
             tweet += 1
 
         # assert
-        self.assertEqual(tweet, 20)
+        self.assertTrue(tweet >= 0)
 
 
 
