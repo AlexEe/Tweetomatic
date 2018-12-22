@@ -12,7 +12,7 @@ twitter_api_key = environ.get("TWITTER_API_KEY")
 env_var = True
 
 
-def write_json_to_file(json_content, filename):    
+def write_env_to_json(content, filename):    
     """
     Takes environmental variables and turns them into .json files.
     Needs to be called before importing googleapiclient.
@@ -21,8 +21,7 @@ def write_json_to_file(json_content, filename):
     global env_var
     try:
         with open(filename, "w") as f:
-            f.write(json_content)
-            return json_content
+            f.write(content)
     except TypeError:
         env_var = False
         return env_var
@@ -32,10 +31,10 @@ def write_json_to_file(json_content, filename):
 Creates .json files with contents of env variables,
 to be used by google api client and twitter api client.
 """
-credentials = write_json_to_file(credentials_json, "credentials.json")
-token = write_json_to_file(token_json, "token.json")
-twitter_token = write_json_to_file(twitter_access_token, "twitter_access_token.json")
-twitter_api = write_json_to_file(twitter_api_key, "twitter_api_key.json")
+credentials = write_env_to_json(credentials_json, "credentials.json")
+token = write_env_to_json(token_json, "token.json")
+twitter_token = write_env_to_json(twitter_access_token, "twitter_access_token.json")
+twitter_api = write_env_to_json(twitter_api_key, "twitter_api_key.json")
 
 
 from datetime import datetime, timedelta
@@ -170,15 +169,15 @@ def create_tweet(data_event, diff):
         
         return tweet
 
-    elif diff == timedelta(days=-3):
-        tweet = "Quick reminder! Our chat for #bisexual survivors will be" \
-                + f" going live this {date_month_year}, {start_hour}-{end_hour}, UK time." \
-                + " Download Telegram in advance so you’re ready!"
+    elif diff == timedelta(days=-4):
+        tweet = f"Our next chat, this {date_month_year}, will be all about" \
+                + f" positivity, the good things that happened to us this year :)" \
+                + " Join us to celebrate the nice things in life!"
 
         return tweet
 
     elif diff == timedelta(days=-2):
-        tweet = "Need a break from the #biphobia circulating on twitter last week?" \
+        tweet = "Having a rough week and just need someone to talk to?" \
                 + " Let us know how you're doing at our bi-weekly chat on Telegram," \
                 + f" this {weekday}, {start_hour}." \
                 + " As always, the chat is moderated by a non-monosexual survivor."           
@@ -194,11 +193,16 @@ def create_tweet(data_event, diff):
         return tweet
 
     elif diff == timedelta(days=-0):
-        tweet = "Having a rough week and just need someone to talk to?" \
-                + " Join our save & friendly chat for bi survivors tonight" \
-                + f" from {start_hour} to {end_hour}." \
+        tweet = "Last minute reminder! Our chat for bi survivors is" \
+                + f" going live tonight from {start_hour} to {end_hour}." \
                 + " Send us a DM now to" \
                 + " receive the secret link to the chat on Telegram."
+
+##                "Having a rough week and just need someone to talk to?" \
+##                + " Join our save & friendly chat for bi survivors tonight" \
+##                + f" from {start_hour} to {end_hour}." \
+##                + " Send us a DM now to" \
+##                + " receive the secret link to the chat on Telegram."
 
         return tweet
 
@@ -230,8 +234,8 @@ def send_tweet(tweet):
         raise TweetTooLong(Exception)
 
     else:
-        # print(tweet)
-        api.update_status(tweet) # Uncomment to send tweet
+        print(tweet)
+        #api.update_status(tweet) # Uncomment to send tweet
 
 
 def main():
