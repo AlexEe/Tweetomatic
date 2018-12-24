@@ -169,14 +169,14 @@ def create_tweet(data_event, diff):
         
         return tweet
 
-    elif diff == timedelta(days=-4):
-        tweet = f"Our next chat, this {date_month_year}, will be all about" \
-                + f" positivity, the good things that happened to us this year :)" \
-                + " Join us to celebrate the nice things in life!"
+    elif diff == timedelta(days=-2):
+        tweet = f"Our next chat this Wednesday will be all about" \
+                + " positivity, the good things in our lives :)" \
+                + f" Join us from {start_hour} to {end_hour} for a friendly and safe get-together!"
 
         return tweet
 
-    elif diff == timedelta(days=-2):
+    elif diff == timedelta(days=-3):
         tweet = "Having a rough week and just need someone to talk to?" \
                 + " Let us know how you're doing at our bi-weekly chat on Telegram," \
                 + f" this {weekday}, {start_hour}." \
@@ -186,9 +186,9 @@ def create_tweet(data_event, diff):
 
     elif diff == timedelta(days=-1):
         tweet = "As always, you can receive the secret link to our chat tomorrow" \
-                + " by sending us a DM! The chat will be moderated by a non-monosexual"\
-                + f" survivor and take place from {start_hour}" \
-                + f" to {end_hour}, UK time."
+                + " by sending us a DM! It will be a save, friendly and positive"\
+                + f" get-together for us bi survivors, focussing on all the" \
+                + f" good things in our lives :)"
 
         return tweet
 
@@ -234,8 +234,8 @@ def send_tweet(tweet):
         raise TweetTooLong(Exception)
 
     else:
-        print(tweet)
-        #api.update_status(tweet) # Uncomment to send tweet
+        #print(tweet)
+        api.update_status(tweet) # Uncomment to send tweet
 
 
 def main():
