@@ -146,14 +146,6 @@ def create_tweet(data_event, diff):
     end_hour = format_hour(data_event["end"])
     date_month = format_date_short(data_event["start"])
 
-    if diff == timedelta(days=-9):
-        tweet = "Mark it in your calendars :)" \
-                + " Our next private chat for non-monosexual survivors will take place" \
-                + f" on {date_month_year}, from {start_hour}" \
-                + f" to {end_hour}, UK time." 
-
-        return tweet
-
     if diff == timedelta(days=-7):
         tweet = f"Our next {summary} will take place" \
                 + f" on {date_month_year}, from {start_hour}" \
@@ -163,32 +155,39 @@ def create_tweet(data_event, diff):
         return tweet
 
     elif diff == timedelta(days=-5):
-        tweet = f"We'll be hosting our next chat on {date_month}, {start_hour}." \
-                + " It’s private, online and moderated by a non-monosexual survivor :)" \
-                + " Send us a DM on the day to receive the secret link to join the chat on Telegram!"
-        
-        return tweet
-
-    elif diff == timedelta(days=-2):
-        tweet = f"Our next chat this Wednesday will be all about" \
-                + " positivity, the good things in our lives :)" \
-                + f" Join us from {start_hour} to {end_hour} for a friendly and safe get-together!"
+        tweet = "Welcome to #20BiTeen everyone!!" \
+                " I hope it's treating all of you well so far :)" \
+                + f" Our first {summary} of the new year will be this" \
+                + f" {weekday}, {start_hour} to {end_hour}." \
 
         return tweet
 
     elif diff == timedelta(days=-3):
-        tweet = "Having a rough week and just need someone to talk to?" \
-                + " Let us know how you're doing at our bi-weekly chat on Telegram," \
-                + f" this {weekday}, {start_hour}." \
-                + " As always, the chat is moderated by a non-monosexual survivor."           
+        tweet = "We'll be hosting our first chat of #20BiTeen" \
+                f" on {date_month}, {start_hour}." \
+                + " It’s private, online and moderated by a non-monosexual survivor :)" \
+                + " Send us a DM on the day to receive the secret link to join the chat on Telegram!"
+        
+        return tweet
+    
+    elif diff == timedelta(days=-2):
+        tweet = "As always, you can receive the secret link to our chat" \
+                + f" this {weekday} by sending us a DM! It will be a save and friendly"\
+                + " get-together for us bi survivors to help" \
+                + " kick off the New Year on the right foot!"
 
         return tweet
-
+    
     elif diff == timedelta(days=-1):
-        tweet = "As always, you can receive the secret link to our chat tomorrow" \
-                + " by sending us a DM! It will be a save, friendly and positive"\
-                + f" get-together for us bi survivors, focussing on all the" \
-                + f" good things in our lives :)"
+        tweet = "What better way to kick off #20BiTeen than to join our" \
+                f" chat for bi survivors tomorrow, {start_hour}?" \
+                " Make sure to download Telegram" \
+                " in advance so you're ready!"
+
+##                "Having a rough week and just need someone to talk to?" \
+##                + " Let us know how you're doing at our bi-weekly chat on Telegram," \
+##                + f" tomorrow at {start_hour}." \
+##                + " As always, the chat is moderated by a non-monosexual survivor."           
 
         return tweet
 
@@ -234,8 +233,8 @@ def send_tweet(tweet):
         raise TweetTooLong(Exception)
 
     else:
-        #print(tweet)
-        api.update_status(tweet) # Uncomment to send tweet
+        print(tweet)
+        #api.update_status(tweet) # Uncomment to send tweet
 
 
 def main():
