@@ -172,9 +172,9 @@ def create_tweet(data_event, diff):
     
     elif diff == timedelta(days=-2):
         tweet = "As always, you can receive the secret link to our chat" \
-                + f" this {weekday} by sending us a DM! It will be a save and friendly"\
+                + f" this {weekday}, {start_hour} by sending us a DM! It will be a save and friendly"\
                 + " get-together for us bi survivors to help" \
-                + " kick off the New Year on the right foot!"
+                + " kick off #20BiTeen on the right foot!"
 
         return tweet
     
@@ -233,8 +233,8 @@ def send_tweet(tweet):
         raise TweetTooLong(Exception)
 
     else:
-        print(tweet)
-        #api.update_status(tweet) # Uncomment to send tweet
+        #print(tweet)
+        api.update_status(tweet) # Uncomment to send tweet
 
 
 def main():
