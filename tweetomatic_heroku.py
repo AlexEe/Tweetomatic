@@ -109,7 +109,7 @@ def time_to_event(data_event):
     now = datetime.now().date()
     target_date = data_event["target_date"]
     diff = now - target_date
-    # print(diff)
+    #print(diff)
     return(diff)
 
 
@@ -155,10 +155,11 @@ def create_tweet(data_event, diff):
         return tweet
 
     elif diff == timedelta(days=-4):
-        tweet = "We hope #20BiTeen is treating y'all well so far!" \
-                + " In any case, let us know how you're doing" \
-                + f" this {weekday}, {start_hour}, at our bi-weekly chat on Telegram," \
-                + " a private and safe get-together for bi survivors."
+        tweet = "Need a break from the bi and transphobia circulating on twitter" \
+                + "/tumblr this past week? Join our bi-weekly chat on Telegram" \
+                + f" next {weekday}," \
+                + " a private and safe get-together for bi survivors" \
+                + " of all genders! :)"
 
         return tweet
     
@@ -171,8 +172,7 @@ def create_tweet(data_event, diff):
         return tweet
 
     elif diff == timedelta(days=-1):
-        tweet = "Having a rough week and just need someone to talk to?" \
-                + " Let us know how you're doing at our bi-weekly chat on Telegram," \
+        tweet = "Let us know how you're doing at our bi-weekly chat on Telegram," \
                 + f" tomorrow at {start_hour}." \
                 + " As always, the chat is moderated by a non-monosexual survivor."           
 
