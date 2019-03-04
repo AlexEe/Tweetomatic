@@ -213,8 +213,8 @@ def send_tweet(tweet):
         raise TweetTooLong(Exception)
 
     else:
-        print(tweet)
-        #api.update_status(tweet) # Uncomment to send tweet
+        #print(tweet)
+        api.update_status(tweet) # Uncomment to send tweet
 
 
 def main():
