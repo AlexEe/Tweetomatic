@@ -155,9 +155,8 @@ def create_tweet(data_event, diff):
         return tweet
 
     elif diff == timedelta(days=-4):
-        tweet = "Need a break from the bi and transphobia circulating on twitter" \
-                + "/tumblr this past week? Join our bi-weekly chat on Telegram" \
-                + f" next {weekday}," \
+        tweet = "Join our bi-weekly chat on Telegram" \
+                + f" next {weekday} ({start_hour} to {end_hour})," \
                 + " a private and safe get-together for bi survivors" \
                 + " of all genders! :)"
 
@@ -165,7 +164,7 @@ def create_tweet(data_event, diff):
     
     elif diff == timedelta(days=-2):
         tweet = "As always, you can receive the secret link to our chat" \
-                + f" this {weekday}, {start_hour} by sending us a DM!" \
+                + f" this {weekday}, {start_hour} to {end_hour} by sending us a DM!" \
                 + " Make sure to download Telegram" \
                 + " in advance so you're ready!"
 
@@ -214,8 +213,8 @@ def send_tweet(tweet):
         raise TweetTooLong(Exception)
 
     else:
-        #print(tweet)
-        api.update_status(tweet) # Uncomment to send tweet
+        print(tweet)
+        #api.update_status(tweet) # Uncomment to send tweet
 
 
 def main():
