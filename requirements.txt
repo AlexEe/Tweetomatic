@@ -19,7 +19,7 @@ python-crontab==2.3.5
 python-dateutil==2.7.5
 requests==2.20.1
 requests-oauthlib==1.0.0
-rsa==4.0
+rsa==4.7
 six==1.11.0
 tweepy==3.6.0
 uritemplate==3.0.0
